@@ -91,7 +91,7 @@ angular.module('dndLists', [])
         }
 
         var ancestor = angular.element(element).parent();
-        while (ancestor) {
+        while (ancestor.length > 0) {
           if (ancestor.hasClass(className)) {
             return ancestor;
           }
