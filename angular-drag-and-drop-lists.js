@@ -77,12 +77,38 @@ angular.module('dndLists', [])
       }
 
       /**
+       * Search up the DOM from the specified element and find an ancestor (parent, grand-parent, etc)
+       * that has the requested class name.
+       */
+      var findAncestorWithClass = function (element, className) {
+        
+        if (!element) {
+          throw new Error("findAncestorWithClass: Invalid value for parameter element");
+        }
+        
+        if (!className) {
+          throw new Error("findAncestorWithClass: Invalid value for parameter className");
+        }
+
+        var ancestor = angular.element(element).parent();
+        while (ancestor) {
+          if (ancestor.hasClass(className)) {
+            return ancestor;
+          }
+
+          ancestor = ancestor.parent();
+        }
+
+        return null;
+      }
+
+      /**
        * Keep track of the mouseTarget so we can use a custom handle.
        */
       element.on('mousedown', function (event) {
         mouseTarget = event.target;
 
-        if (!attr.dndHandleClass || mouseTarget.classList.contains(attr.dndHandleClass)) {
+        if (!attr.dndHandleClass || findAncestorWithClass(mouseTarget, attr.dndHandleClass)) {
           // Set the HTML5 draggable attribute on the element
           element.attr("draggable", "true");
         } else {
@@ -95,7 +121,7 @@ angular.module('dndLists', [])
        * which is the primary way we communicate with the target element
        */
       element.on('dragstart', function(event) {
-        if (attr.dndHandleClass && !mouseTarget.classList.contains(attr.dndHandleClass)) {
+        if (attr.dndHandleClass && !findAncestorWithClass(mouseTarget, attr.dndHandleClass)) {
           event.preventDefault();
           return;
         }
